@@ -1,0 +1,17 @@
+1. in Google docs, there is an annoying shortcut that prevents my keyboard layout to input character : alt-w (on macos).
+I want to write a GreaseMonkey script that runs on docs.google.com so that : when the w is pressed either by itself or as part of a combination ie alt-w, the event is not process by the Google Docs  program and instead the character represented by alt-w is output normally like it would anywhere else.
+
+
+2. this does not work : no log is ever output.
+a stackoverflow qa from 2010 had :
+
+Editing in Google Docs uses an iframe. You need to attach a listener to the iframe's document. It seems to do something complicated with the iframe I haven't yet been able to work out fully, but the following seems to work for Firefox:
+
+var iframe = document.getElementsByTagName("iframe")[0];
+if (iframe) {
+iframe.contentDocument.addEventListener("keypress", function(evt) {
+console.log("iframe keypress: " + evt.which);
+}, false);
+}
+
+doesn't seem to make any difference now in 2025. But Google Docs keyboard handling might be more complex than what you wrote
