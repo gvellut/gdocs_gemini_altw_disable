@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Google Docs Alt-W Fix (macOS) - qwerty-fr é fix
 // @version      1.0
-// @description  Allows Alt+W to type the qwerty-fr é in Google Docs on macOS, instead of triggering a GDocs shortcut for Gemini popup
+// @description  Allows Alt+W to type the qwerty-fr é in Google Docs, instead of triggering a GDocs shortcut for Gemini popup
 // @author       Guilhem Vellut
 // @match        https://docs.google.com/*
 // @grant        none
@@ -55,7 +55,8 @@
                     iframe.contentWindow.addEventListener('keydown', keydownHandler, true);
                     console.log(LOG_PREFIX, 'Listener attached to iframe:', iframe.id || iframe.className || iframe.src.substring(0, 100));
                 } else {
-                    console.log(LOG_PREFIX, 'Iframe contentWindow or document not accessible/ready. Skipping:', iframe.id || iframe.className || iframe.src.substring(0, 100));
+                    console.log(LOG_PREFIX, 'Not an iframe', iframe.id || iframe.className);
+                    iframe.addEventListener('keydown', keydownHandler, true);
                 }
             } catch (e) {
                 console.warn(LOG_PREFIX, 'Error accessing/attaching to iframe (likely cross-origin or not fully loaded):', iframe.id || iframe.className || iframe.src.substring(0, 100), e.message);
@@ -70,7 +71,8 @@
             'iframe[aria-label*="Editable content"]',   // General aria-label match
             'iframe[aria-label*="Editor content"]',
             'iframe[aria-label*="Rich text editor"]',
-            'iframe[role="main"] iframe'                // Sometimes nested
+            'iframe[role="main"] iframe',               // Sometimes nested
+            '.goog-control'      // not an iframe : the doc title headers on the left
         ];
 
         const findAndProcessEditorIframes = () => {
@@ -83,6 +85,7 @@
                 editorIframes.forEach(iframe => {
                     // Basic check to ensure it's likely a GDocs related iframe
                     // Editor iframes might initially have src="about:blank"
+                    // also ok if not an iframe
                     if (!iframe.src || iframe.src.startsWith('https://docs.google.com/') || iframe.src.startsWith('about:blank')) {
                         attachListenerToIframeContentWindow(iframe);
                     } else {
